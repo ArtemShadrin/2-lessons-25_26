@@ -10,4 +10,3 @@ jobs:
         run: docker build -t artemshadrin/skypro_artemshadrin_app:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
       - name: docker push
         run: docker push artemshadrin/skypro_artemshadrin_app:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-
