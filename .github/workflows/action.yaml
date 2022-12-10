@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir deploy
           cat docker-compose-ci.yaml | envsubst > deploy/docker-compose.yaml
-          cat docker_ci_config.yaml | envsubst > deploy/docker_config.yaml
+          cat docker_ci_config.py | envsubst > deploy/docker_config.py
       - name: copy files to server
         uses: appleboy/scp-action@master
         with:
@@ -36,7 +36,7 @@ jobs:
           source: "deploy/docker-compose.yaml,deploy/docker_config.py"
           target: "flask_app_ci"
           strip_components: 1
-      - name: run docker-compose
+      - name: deploy app
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -44,4 +44,4 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd flask_app_ci
-            echo ${{ secrets.PASSWORD }} | sudo -S docker-compose up -d
+            echo ${{ secrets.PASSWORD }} | sudo -S docker-compose down
