@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: clone code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: docker build
         run: docker build -t artemshadrin/skypro-artemshadrin_app:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
       - name: docker login
@@ -15,10 +15,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_push
-    env:
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_NAME: ${{ secrets.DB_NAME }}
     steps:
       - name: clone code
         uses: actions/checkout@v2
@@ -26,14 +22,13 @@ jobs:
         run: |
           mkdir deploy
           cat docker-compose-ci.yaml | envsubst > deploy/docker-compose.yaml
-          cat docker_ci_config.py | envsubst > deploy/docker_config.py
       - name: copy files to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "deploy/docker-compose.yaml,deploy/docker_config.py"
+          source: "deploy/docker-compose.yaml"
           target: "flask_app_ci"
           strip_components: 1
       - name: deploy app
